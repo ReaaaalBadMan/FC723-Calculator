@@ -1,0 +1,69 @@
+import math
+import ast
+
+class CalculatorBackend:
+    def __init__(self):
+        self.expression = ""
+
+    def input(self, value):
+        valid_inputs = '0123456789+-*/().'
+        if self.expression == "" and value == "-":
+            self.expression += "-"
+        elif str(value) in valid_inputs:
+            self.expression += str(value)
+        else:
+            raise ValueError("Invalid input")
+
+    def clear(self):
+        self.expression = ""
+
+    def calculate(self):
+        try:
+            # Using eval with safety limitations
+            result = eval(self.expression, {"__builtins__": None}, {"math": math})
+            if isinstance(result, float) and result == float('inf'):
+                raise ZeroDivisionError
+            self.expression = str(result)
+            return result
+        except ZeroDivisionError:
+            self.expression = ""
+            return "Cannot divide by zero"
+        except Exception:
+            self.expression = ""
+            return "Error"
+
+    def scientific(self, func):
+        try:
+            if not self.expression:
+                return "Error"
+            value = float(self.expression)
+            if func == 'square':
+                result = value ** 2
+            elif func == 'sqrt':
+                result = math.sqrt(value)
+            elif func == 'sin':
+                result = math.sin(math.radians(value))
+            elif func == 'cos':
+                result = math.cos(math.radians(value))
+            elif func == 'tan':
+                result = math.tan(math.radians(value))
+            elif func == 'arcsin':
+                result = math.degrees(math.asin(value))
+            elif func == 'arccos':
+                result = math.degrees(math.acos(value))
+            elif func == 'arctan':
+                result = math.degrees(math.atan(value))
+            else:
+                return "Error"
+
+            self.expression = str(result)
+            return result
+        except ValueError:
+            self.expression = ""
+            return "Error"
+        except Exception:
+            self.expression = ""
+            return "Error"
+
+    def get_expression(self):
+        return self.expression
